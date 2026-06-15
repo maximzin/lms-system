@@ -1,0 +1,56 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-create-teacher
+      author: max zinoviev
+      changes:
+        - createTable:
+            tableName: teacher
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_teacher
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: text
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 2-create-course
+      author: max zinoviev
+      changes:
+        - createTable:
+            tableName: course
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_course
+                    nullable: false
+              - column:
+                  name: name
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: teacher_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_course_teacher
+                    references: teacher(id)
