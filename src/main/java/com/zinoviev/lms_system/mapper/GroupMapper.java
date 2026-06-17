@@ -27,7 +27,4 @@ public interface GroupMapper {
     @Mapping(target = "studentList", ignore = true)
     Group upgradeEntity(@MappingTarget Group oldGroup, GroupUpgradeDto dto);
 
-    @Mapping(target = "courseList", source = "courseList")
-    GroupWithCoursesDto toResponseWithCourses(Group group);
-
 }

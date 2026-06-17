@@ -10,11 +10,13 @@ import java.util.UUID;
 @Table(name = "student")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Student {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID id = UUID.randomUUID();
+    private UUID id;
 
     @Column(name = "first_name", nullable = false)
     private String firstName;
@@ -23,9 +25,7 @@ public class Student {
     private String lastName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id", nullable = true)
+    @JoinColumn(name = "group_id")
     private Group group;
 
-    public Student() {
-    }
 }

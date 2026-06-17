@@ -1,6 +1,5 @@
 package com.zinoviev.lms_system.service;
 
-import com.zinoviev.lms_system.dao.CourseRepository;
 import com.zinoviev.lms_system.dao.GroupRepository;
 import com.zinoviev.lms_system.dao.StudentRepository;
 import com.zinoviev.lms_system.dto.group.*;
@@ -23,7 +22,7 @@ public class GroupServiceImpl implements GroupService {
     private final StudentRepository studentRepository;
     private final GroupMapper groupMapper;
 
-    public GroupServiceImpl(GroupMapper groupMapper, GroupRepository groupRepository, StudentRepository studentRepository, CourseRepository courseRepository) {
+    public GroupServiceImpl(GroupMapper groupMapper, GroupRepository groupRepository, StudentRepository studentRepository) {
         this.groupMapper = groupMapper;
         this.groupRepository = groupRepository;
         this.studentRepository = studentRepository;
@@ -38,9 +37,7 @@ public class GroupServiceImpl implements GroupService {
 
         log.info("Группа была добавлена, id: {}", newGroup.getId());
 
-        GroupSummaryDto responseDto = groupMapper.toSummaryResponse(newGroup);
-
-        return responseDto;
+        return groupMapper.toSummaryResponse(newGroup);
     }
 
     @Override
@@ -50,9 +47,7 @@ public class GroupServiceImpl implements GroupService {
 
         List<Student> students = studentRepository.findAllByGroupId(id);
 
-        GroupWithStudentsDto responseDto = groupMapper.toResponseWithStudents(foundGroup, students);
-
-        return responseDto;
+        return groupMapper.toResponseWithStudents(foundGroup, students);
     }
 
     @Override
@@ -65,11 +60,7 @@ public class GroupServiceImpl implements GroupService {
 
         log.info("Группа была обновлена, id: {}", newGroup.getId());
 
-        List<Student> students = studentRepository.findAllByGroupId(id);
-
-        GroupSummaryDto responseDto = groupMapper.toSummaryResponse(newGroup);
-
-        return responseDto;
+        return groupMapper.toSummaryResponse(newGroup);
     }
 
     @Override
@@ -94,9 +85,8 @@ public class GroupServiceImpl implements GroupService {
                 });
 
         List<Student> newStudentList = studentRepository.findAllByGroupId(dto.groupId());
-        GroupWithStudentsDto responseDto = groupMapper.toResponseWithStudents(group, newStudentList);
 
-        return responseDto;
+        return groupMapper.toResponseWithStudents(group, newStudentList);
 
     }
 

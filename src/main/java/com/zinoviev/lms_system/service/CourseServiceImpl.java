@@ -44,9 +44,7 @@ public class CourseServiceImpl implements CourseService {
 
         log.info("Курс был добавлен, id: {}", newCourse.getId());
 
-        CourseWithTeacherDto responseDto = courseMapper.toResponseWithTeacher(newCourse);
-
-        return responseDto;
+        return courseMapper.toResponseWithTeacher(newCourse);
     }
 
     @Override
@@ -54,9 +52,7 @@ public class CourseServiceImpl implements CourseService {
     public CourseWithTeacherDto getCourse(UUID id) {
         Course foundCourse = courseRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Курс не найден"));
 
-        CourseWithTeacherDto responseDto = courseMapper.toResponseWithTeacher(foundCourse);
-
-        return responseDto;
+        return courseMapper.toResponseWithTeacher(foundCourse);
     }
 
     @Override
@@ -69,9 +65,7 @@ public class CourseServiceImpl implements CourseService {
 
         log.info("Курс был обновлен, id: {}", newCourse.getId());
 
-        CourseWithTeacherDto responseDto = courseMapper.toResponseWithTeacher(newCourse);
-
-        return responseDto;
+        return courseMapper.toResponseWithTeacher(newCourse);
     }
 
     @Override
@@ -89,11 +83,9 @@ public class CourseServiceImpl implements CourseService {
         Group group = groupRepository.findById(dto.groupId()).orElseThrow(() -> new ResourceNotFoundException("Группа не найдена"));
 
         course.getGroupList().add(group);
-        group.getCourseList().add(course);
         courseRepository.save(course);
 
-        CourseWithGroupsDto responseDto = courseMapper.toResponseWithGroups(course);
-        return responseDto;
+        return courseMapper.toResponseWithGroups(course);
 
     }
 
@@ -104,7 +96,6 @@ public class CourseServiceImpl implements CourseService {
         Group group = groupRepository.findById(dto.groupId()).orElseThrow(() -> new ResourceNotFoundException("Группа не найдена"));
 
         course.getGroupList().remove(group);
-        group.getCourseList().remove(course);
         courseRepository.save(course);
 
         log.info("Группа была удалена с курса");

@@ -1,7 +1,7 @@
 package com.zinoviev.lms_system.controller;
 
 import com.zinoviev.lms_system.dto.teacher.TeacherCreateDto;
-import com.zinoviev.lms_system.dto.teacher.TeacherWithCoursesDto;
+import com.zinoviev.lms_system.dto.teacher.TeacherWithCoursesAndStudentsDto;
 import com.zinoviev.lms_system.dto.teacher.TeacherSummaryDto;
 import com.zinoviev.lms_system.dto.teacher.TeacherUpgradeDto;
 import com.zinoviev.lms_system.service.TeacherService;
@@ -33,8 +33,8 @@ public class TeacherController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Получить преподавателя по ID")
-    public ResponseEntity<TeacherWithCoursesDto> getTeacher(@PathVariable UUID id) {
-        TeacherWithCoursesDto responseDto = teacherService.getTeacher(id);
+    public ResponseEntity<TeacherWithCoursesAndStudentsDto> getTeacher(@PathVariable UUID id) {
+        TeacherWithCoursesAndStudentsDto responseDto = teacherService.getTeacher(id);
         return ResponseEntity.ok(responseDto);
     }
 

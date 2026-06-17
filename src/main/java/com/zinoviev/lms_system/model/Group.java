@@ -2,6 +2,7 @@ package com.zinoviev.lms_system.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -12,11 +13,13 @@ import java.util.UUID;
 @Table(name = "study_group") // study_group из-за служебного слова group
 @Getter
 @Setter
+@NoArgsConstructor
 public class Group {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID id = UUID.randomUUID();
+    private UUID id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -24,8 +27,4 @@ public class Group {
     @OneToMany(mappedBy = "group", fetch = FetchType.LAZY)
     private List<Student> studentList = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "groupList")
-    private List<Course> courseList = new ArrayList<>();
-
-    public Group() {    }
 }

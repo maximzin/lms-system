@@ -1,7 +1,6 @@
 package com.zinoviev.lms_system.dao;
 
 import com.zinoviev.lms_system.model.Course;
-import com.zinoviev.lms_system.model.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

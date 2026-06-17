@@ -2,6 +2,7 @@ package com.zinoviev.lms_system.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -12,11 +13,13 @@ import java.util.UUID;
 @Table(name = "teacher")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Teacher {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID id = UUID.randomUUID();
+    private UUID id;
 
     @Column(name = "first_name", nullable = false)
     private String firstName;
@@ -27,6 +30,4 @@ public class Teacher {
     @OneToMany(mappedBy = "teacher", fetch = FetchType.LAZY)
     private List<Course> courseList = new ArrayList<>();
 
-    public Teacher() {
-    }
 }

@@ -46,17 +46,15 @@ public class StudentServiceImpl implements StudentService {
         }
 
         log.info("Студент был добавлен, id: {}", newStudent.getId());
-        StudentWithGroupDto responseDto = studentMapper.toResponseWithGroup(newStudent);
 
-        return responseDto;
+        return studentMapper.toResponseWithGroup(newStudent);
     }
 
     @Override
     @Transactional(readOnly = true)
     public StudentWithGroupDto getStudent(UUID id) {
         Student foundStudent = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Студент не найден"));
-        StudentWithGroupDto responseDto = studentMapper.toResponseWithGroup(foundStudent);
-        return responseDto;
+        return studentMapper.toResponseWithGroup(foundStudent);
     }
 
     @Override
@@ -77,8 +75,7 @@ public class StudentServiceImpl implements StudentService {
 
         log.info("Студент был обновлен, id: {}", newStudent.getId());
 
-        StudentWithGroupDto responseDto = studentMapper.toResponseWithGroup(newStudent);
-        return responseDto;
+        return studentMapper.toResponseWithGroup(newStudent);
     }
 
     @Override

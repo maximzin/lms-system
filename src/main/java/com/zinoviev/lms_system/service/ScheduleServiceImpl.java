@@ -4,8 +4,6 @@ import com.zinoviev.lms_system.dao.CourseRepository;
 import com.zinoviev.lms_system.dao.GroupRepository;
 import com.zinoviev.lms_system.dao.ScheduleRepository;
 import com.zinoviev.lms_system.dao.TeacherRepository;
-import com.zinoviev.lms_system.dto.group.GroupCreateDto;
-import com.zinoviev.lms_system.dto.group.GroupSummaryDto;
 import com.zinoviev.lms_system.dto.schedule.*;
 import com.zinoviev.lms_system.exception.BusinessException;
 import com.zinoviev.lms_system.exception.ResourceNotFoundException;
@@ -62,9 +60,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         log.info("Запись расписания была добавлена, id: {}", newSchedule.getId());
 
-        ScheduleSummaryDto responseDto = scheduleMapper.toSummaryResponse(newSchedule);
-
-        return responseDto;
+        return scheduleMapper.toSummaryResponse(newSchedule);
     }
 
     @Override
@@ -75,8 +71,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         scheduleRepository.save(schedule);
 
-        ScheduleSummaryDto responseDto = scheduleMapper.toSummaryResponse(schedule);
-        return responseDto;
+        return scheduleMapper.toSummaryResponse(schedule);
     }
 
     @Override
@@ -95,8 +90,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .sorted(Comparator.comparing(Schedule::getStartTime))
                 .toList();
 
-        ScheduleForGroupDto responseDto = scheduleMapper.toScheduleForGroup(group, scheduleList);
-        return responseDto;
+        return scheduleMapper.toScheduleForGroup(group, scheduleList);
     }
 
     @Override
@@ -108,7 +102,6 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .sorted(Comparator.comparing(Schedule::getStartTime))
                 .toList();
 
-        ScheduleForTeacherDto responseDto = scheduleMapper.toScheduleForTeacher(teacher, scheduleList);
-        return responseDto;
+        return scheduleMapper.toScheduleForTeacher(teacher, scheduleList);
     }
 }

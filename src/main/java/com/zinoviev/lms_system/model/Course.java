@@ -2,6 +2,7 @@ package com.zinoviev.lms_system.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -12,11 +13,13 @@ import java.util.UUID;
 @Table(name = "course")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Course {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID id = UUID.randomUUID();
+    private UUID id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -36,5 +39,4 @@ public class Course {
     )
     private List<Group> groupList = new ArrayList<>();
 
-    public Course() {   }
 }

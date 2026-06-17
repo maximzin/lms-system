@@ -4,8 +4,6 @@ import com.zinoviev.lms_system.dto.schedule.ScheduleCreateDto;
 import com.zinoviev.lms_system.dto.schedule.ScheduleForGroupDto;
 import com.zinoviev.lms_system.dto.schedule.ScheduleForTeacherDto;
 import com.zinoviev.lms_system.dto.schedule.ScheduleSummaryDto;
-import com.zinoviev.lms_system.dto.teacher.TeacherWithCoursesDto;
-import com.zinoviev.lms_system.model.Course;
 import com.zinoviev.lms_system.model.Group;
 import com.zinoviev.lms_system.model.Schedule;
 import com.zinoviev.lms_system.model.Teacher;

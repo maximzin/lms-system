@@ -1,6 +1,5 @@
 package com.zinoviev.lms_system.controller;
 
-import com.zinoviev.lms_system.dto.group.GroupWithStudentsDto;
 import com.zinoviev.lms_system.dto.schedule.*;
 import com.zinoviev.lms_system.service.ScheduleService;
 import io.swagger.v3.oas.annotations.Operation;

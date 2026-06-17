@@ -1,10 +1,11 @@
 package com.zinoviev.lms_system.mapper;
 
 import com.zinoviev.lms_system.dto.teacher.TeacherCreateDto;
-import com.zinoviev.lms_system.dto.teacher.TeacherWithCoursesDto;
+import com.zinoviev.lms_system.dto.teacher.TeacherWithCoursesAndStudentsDto;
 import com.zinoviev.lms_system.dto.teacher.TeacherSummaryDto;
 import com.zinoviev.lms_system.dto.teacher.TeacherUpgradeDto;
 import com.zinoviev.lms_system.model.Course;
+import com.zinoviev.lms_system.model.Student;
 import com.zinoviev.lms_system.model.Teacher;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -25,7 +26,8 @@ public interface TeacherMapper {
     @Mapping(target = "firstName", source = "teacher.firstName")
     @Mapping(target = "lastName", source = "teacher.lastName")
     @Mapping(target = "courseList", source = "courseList")
-    TeacherWithCoursesDto toResponseWithCourses(Teacher teacher, List<Course> courseList);
+    @Mapping(target = "studentList", source = "studentList")
+    TeacherWithCoursesAndStudentsDto toResponseWithCoursesAndStudents(Teacher teacher, List<Course> courseList, List<Student> studentList);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "courseList", ignore = true)

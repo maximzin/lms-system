@@ -2,6 +2,7 @@ package com.zinoviev.lms_system.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.ZonedDateTime;
@@ -11,12 +12,13 @@ import java.util.UUID;
 @Table(name = "schedule")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Schedule {
 
     @Id
-    @Column(name = "id", nullable = false, updatable = false)
-    private UUID id = UUID.randomUUID();
-
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = false)
@@ -33,5 +35,4 @@ public class Schedule {
     @Column(name = "start_time", nullable = false)
     private ZonedDateTime startTime;
 
-    public Schedule() {}
 }
