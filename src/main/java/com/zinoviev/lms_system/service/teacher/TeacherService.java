@@ -1,4 +1,4 @@
-package com.zinoviev.lms_system.service;
+package com.zinoviev.lms_system.service.teacher;
 
 import com.zinoviev.lms_system.dto.teacher.TeacherCreateDto;
 import com.zinoviev.lms_system.dto.teacher.TeacherWithCoursesAndStudentsDto;

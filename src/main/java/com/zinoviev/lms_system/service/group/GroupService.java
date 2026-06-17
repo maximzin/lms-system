@@ -1,4 +1,4 @@
-package com.zinoviev.lms_system.service;
+package com.zinoviev.lms_system.service.group;
 
 
 import com.zinoviev.lms_system.dto.group.*;

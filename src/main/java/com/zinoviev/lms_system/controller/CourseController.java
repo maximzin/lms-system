@@ -1,31 +1,36 @@
 package com.zinoviev.lms_system.controller;
 
 import com.zinoviev.lms_system.dto.course.*;
-import com.zinoviev.lms_system.service.CourseService;
+import com.zinoviev.lms_system.service.course.CourseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/course")
+@RequiredArgsConstructor
 @Tag(name = "Курсы", description = "Управление курсами")
 public class CourseController {
 
     private final CourseService courseService;
 
-    public CourseController(CourseService courseService) {
-        this.courseService = courseService;
-    }
-
     @PostMapping
     @Operation(summary = "Создать курс")
     public ResponseEntity<CourseWithTeacherDto> createCourse(@Valid @RequestBody CourseCreateDto dto) {
         CourseWithTeacherDto responseDto = courseService.createCourse(dto);
-        return ResponseEntity.ok(responseDto);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(responseDto.id())
+                .toUri();
+        return ResponseEntity.created(location).body(responseDto);
     }
 
     @GetMapping("/{id}")
@@ -46,14 +51,19 @@ public class CourseController {
     @Operation(summary = "Удалить курс по ID")
     public ResponseEntity<String> deleteCourse(@PathVariable UUID id) {
         courseService.deleteCourse(id);
-        return ResponseEntity.ok("Группа была успешно удалена");
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/add_group_to_course")
     @Operation(summary = "Добавить группу к курсу")
     public ResponseEntity<CourseWithGroupsDto> addGroupToCourse(@Valid @RequestBody AddGroupToCourseDto dto) {
         CourseWithGroupsDto responseDto = courseService.addGroupToCourse(dto);
-        return ResponseEntity.ok(responseDto);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(responseDto.id())
+                .toUri();
+        return ResponseEntity.created(location).body(responseDto);
     }
 
     @PatchMapping("/remove_group_from_course")

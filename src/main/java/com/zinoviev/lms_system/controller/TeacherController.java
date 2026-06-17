@@ -4,31 +4,36 @@ import com.zinoviev.lms_system.dto.teacher.TeacherCreateDto;
 import com.zinoviev.lms_system.dto.teacher.TeacherWithCoursesAndStudentsDto;
 import com.zinoviev.lms_system.dto.teacher.TeacherSummaryDto;
 import com.zinoviev.lms_system.dto.teacher.TeacherUpgradeDto;
-import com.zinoviev.lms_system.service.TeacherService;
+import com.zinoviev.lms_system.service.teacher.TeacherService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/teacher")
+@RequiredArgsConstructor
 @Tag(name = "Преподаватели", description = "Управление преподавателями")
 public class TeacherController {
 
     private final TeacherService teacherService;
 
-    public TeacherController(TeacherService teacherService) {
-        this.teacherService = teacherService;
-    }
-
     @PostMapping
     @Operation(summary = "Создать преподавателя")
     public ResponseEntity<TeacherSummaryDto> createTeacher(@Valid @RequestBody TeacherCreateDto dto) {
         TeacherSummaryDto responseDto = teacherService.createTeacher(dto);
-        return ResponseEntity.ok(responseDto);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(responseDto.id())
+                .toUri();
+        return ResponseEntity.created(location).body(responseDto);
     }
 
     @GetMapping("/{id}")
@@ -49,7 +54,7 @@ public class TeacherController {
     @Operation(summary = "Удалить преподавателя по ID")
     public ResponseEntity<String> deleteTeacher(@PathVariable UUID id) {
         teacherService.deleteTeacher(id);
-        return ResponseEntity.ok("Преподаватель был успешно удален");
+        return ResponseEntity.noContent().build();
     }
 
 }

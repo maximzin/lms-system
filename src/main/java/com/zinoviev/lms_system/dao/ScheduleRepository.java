@@ -11,6 +11,11 @@ import java.util.UUID;
 public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
 
     List<Schedule> findAllByGroupId(UUID id);
+
     List<Schedule> findAllByTeacherId(UUID id);
+
+    List<Schedule> findAllByGroupIdOrderByStartTimeAsc(UUID groupId);
+
+    List<Schedule> findAllByTeacherIdOrderByStartTimeAsc(UUID teacherId);
 
 }

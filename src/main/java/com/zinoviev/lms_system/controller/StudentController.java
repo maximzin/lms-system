@@ -3,31 +3,36 @@ package com.zinoviev.lms_system.controller;
 import com.zinoviev.lms_system.dto.student.StudentCreateDto;
 import com.zinoviev.lms_system.dto.student.StudentUpgradeDto;
 import com.zinoviev.lms_system.dto.student.StudentWithGroupDto;
-import com.zinoviev.lms_system.service.StudentService;
+import com.zinoviev.lms_system.service.student.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/student")
+@RequiredArgsConstructor
 @Tag(name = "Студенты", description = "Управление студентами")
 public class StudentController {
 
     private final StudentService studentService;
 
-    public StudentController(StudentService studentService) {
-        this.studentService = studentService;
-    }
-
     @PostMapping
     @Operation(summary = "Создать студента")
     public ResponseEntity<StudentWithGroupDto> createStudent(@Valid @RequestBody StudentCreateDto dto) {
         StudentWithGroupDto responseDto = studentService.createStudent(dto);
-        return ResponseEntity.ok(responseDto);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(responseDto.id())
+                .toUri();
+        return ResponseEntity.created(location).body(responseDto);
     }
 
     @GetMapping("/{id}")
@@ -48,6 +53,6 @@ public class StudentController {
     @Operation(summary = "Удалить студента по ID")
     public ResponseEntity<String> deleteStudent(@PathVariable UUID id) {
         studentService.deleteStudent(id);
-        return ResponseEntity.ok("Студент был успешно удален");
+        return ResponseEntity.noContent().build();
     }
 }

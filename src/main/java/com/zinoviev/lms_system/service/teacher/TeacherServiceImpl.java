@@ -1,4 +1,4 @@
-package com.zinoviev.lms_system.service;
+package com.zinoviev.lms_system.service.teacher;
 
 import com.zinoviev.lms_system.dao.CourseRepository;
 import com.zinoviev.lms_system.dao.StudentRepository;
@@ -8,6 +8,7 @@ import com.zinoviev.lms_system.dto.teacher.TeacherWithCoursesAndStudentsDto;
 import com.zinoviev.lms_system.dto.teacher.TeacherSummaryDto;
 import com.zinoviev.lms_system.dto.teacher.TeacherUpgradeDto;
 import com.zinoviev.lms_system.exception.ResourceNotFoundException;
+import com.zinoviev.lms_system.exception.TeacherNotFoundException;
 import com.zinoviev.lms_system.mapper.TeacherMapper;
 import com.zinoviev.lms_system.model.Course;
 import com.zinoviev.lms_system.model.Student;
@@ -50,7 +51,7 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     @Transactional(readOnly = true)
     public TeacherWithCoursesAndStudentsDto getTeacher(UUID id) {
-        Teacher foundTeacher = teacherRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Преподаватель не найден"));
+        Teacher foundTeacher = teacherRepository.findById(id).orElseThrow(() -> new TeacherNotFoundException("Преподаватель не найден"));
 
         List<Course> courseList = courseRepository.findAllByTeacherId(id);
 
@@ -62,7 +63,7 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     @Transactional
     public TeacherSummaryDto upgradeTeacher(UUID id, TeacherUpgradeDto dto) {
-        Teacher oldTeacher = teacherRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Преподаватель не найден"));
+        Teacher oldTeacher = teacherRepository.findById(id).orElseThrow(() -> new TeacherNotFoundException("Преподаватель не найден"));
         Teacher newTeacher = teacherMapper.upgradeEntity(oldTeacher, dto);
 
         teacherRepository.save(newTeacher);

@@ -1,4 +1,4 @@
-package com.zinoviev.lms_system.service;
+package com.zinoviev.lms_system.service.schedule;
 
 import com.zinoviev.lms_system.dto.schedule.*;
 

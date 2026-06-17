@@ -1,9 +1,11 @@
-package com.zinoviev.lms_system.service;
+package com.zinoviev.lms_system.service.group;
 
 import com.zinoviev.lms_system.dao.GroupRepository;
 import com.zinoviev.lms_system.dao.StudentRepository;
 import com.zinoviev.lms_system.dto.group.*;
+import com.zinoviev.lms_system.exception.GroupNotFoundException;
 import com.zinoviev.lms_system.exception.ResourceNotFoundException;
+import com.zinoviev.lms_system.exception.StudentNotFoundException;
 import com.zinoviev.lms_system.mapper.GroupMapper;
 import com.zinoviev.lms_system.model.Group;
 import com.zinoviev.lms_system.model.Student;
@@ -43,7 +45,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional(readOnly = true)
     public GroupWithStudentsDto getGroup(UUID id) {
-        Group foundGroup = groupRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Группа не найдена"));
+        Group foundGroup = groupRepository.findById(id).orElseThrow(() -> new GroupNotFoundException("Группа не найдена"));
 
         List<Student> students = studentRepository.findAllByGroupId(id);
 
@@ -53,7 +55,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional
     public GroupSummaryDto upgradeGroup(UUID id, GroupUpgradeDto dto) {
-        Group oldGroup = groupRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Группа не найдена"));
+        Group oldGroup = groupRepository.findById(id).orElseThrow(() -> new GroupNotFoundException("Группа не найдена"));
         Group newGroup = groupMapper.upgradeEntity(oldGroup, dto);
 
         groupRepository.save(newGroup);
@@ -75,11 +77,11 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public GroupWithStudentsDto uniteStudentsInGroup(UniteStudentsInGroupDto dto) {
 
-        Group group = groupRepository.findById(dto.groupId()).orElseThrow(() -> new ResourceNotFoundException("Группа не найдена"));
+        Group group = groupRepository.findById(dto.groupId()).orElseThrow(() -> new GroupNotFoundException("Группа не найдена"));
 
         dto.studentIdList()
                 .forEach(studentId -> {
-                    Student student = studentRepository.findById(studentId).orElseThrow(() -> new ResourceNotFoundException("Один из студентов не найден, id=" + studentId));
+                    Student student = studentRepository.findById(studentId).orElseThrow(() -> new StudentNotFoundException("Один из студентов не найден, id=" + studentId));
                     student.setGroup(group);
                     studentRepository.save(student);
                 });

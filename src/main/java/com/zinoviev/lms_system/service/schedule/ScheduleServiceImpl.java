@@ -1,12 +1,11 @@
-package com.zinoviev.lms_system.service;
+package com.zinoviev.lms_system.service.schedule;
 
 import com.zinoviev.lms_system.dao.CourseRepository;
 import com.zinoviev.lms_system.dao.GroupRepository;
 import com.zinoviev.lms_system.dao.ScheduleRepository;
 import com.zinoviev.lms_system.dao.TeacherRepository;
 import com.zinoviev.lms_system.dto.schedule.*;
-import com.zinoviev.lms_system.exception.BusinessException;
-import com.zinoviev.lms_system.exception.ResourceNotFoundException;
+import com.zinoviev.lms_system.exception.*;
 import com.zinoviev.lms_system.mapper.ScheduleMapper;
 import com.zinoviev.lms_system.model.Course;
 import com.zinoviev.lms_system.model.Group;
@@ -49,8 +48,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         Schedule newSchedule = scheduleMapper.toEntity(dto);
 
-        Group group = groupRepository.findById(dto.groupId()).orElseThrow(() -> new ResourceNotFoundException("Группа не найдена"));
-        Course course = courseRepository.findById(dto.courseId()).orElseThrow(() -> new ResourceNotFoundException("Курс не найден"));
+        Group group = groupRepository.findById(dto.groupId()).orElseThrow(() -> new GroupNotFoundException("Группа не найдена"));
+        Course course = courseRepository.findById(dto.courseId()).orElseThrow(() -> new CourseNotFoundException("Курс не найден"));
 
         newSchedule.setGroup(group);
         newSchedule.setCourse(course);
@@ -66,7 +65,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     @Transactional
     public ScheduleSummaryDto updateSchedule(UUID scheduleId, ScheduleUpdateDto dto) {
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new ResourceNotFoundException("Запись расписания не найдена"));
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new ScheduleNotFoundException("Запись расписания не найдена"));
         schedule.setStartTime(dto.startTime());
 
         scheduleRepository.save(schedule);
@@ -83,24 +82,18 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public ScheduleForGroupDto getScheduleForGroup(UUID groupId) {
-        Group group = groupRepository.findById(groupId).orElseThrow(() -> new ResourceNotFoundException("Группа не найдена"));
+        Group group = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Группа не найдена"));
 
-        List<Schedule> scheduleList = scheduleRepository.findAllByGroupId(groupId)
-                .stream()
-                .sorted(Comparator.comparing(Schedule::getStartTime))
-                .toList();
+        List<Schedule> scheduleList = scheduleRepository.findAllByGroupIdOrderByStartTimeAsc(groupId);
 
         return scheduleMapper.toScheduleForGroup(group, scheduleList);
     }
 
     @Override
     public ScheduleForTeacherDto getScheduleForTeacher(UUID teacherId) {
-        Teacher teacher = teacherRepository.findById(teacherId).orElseThrow(() -> new ResourceNotFoundException("Преподаватель не найден"));
+        Teacher teacher = teacherRepository.findById(teacherId).orElseThrow(() -> new TeacherNotFoundException("Преподаватель не найден"));
 
-        List<Schedule> scheduleList = scheduleRepository.findAllByTeacherId(teacherId)
-                .stream()
-                .sorted(Comparator.comparing(Schedule::getStartTime))
-                .toList();
+        List<Schedule> scheduleList = scheduleRepository.findAllByTeacherIdOrderByStartTimeAsc(teacherId);
 
         return scheduleMapper.toScheduleForTeacher(teacher, scheduleList);
     }

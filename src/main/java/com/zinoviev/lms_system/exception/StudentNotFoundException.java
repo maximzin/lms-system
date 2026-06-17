@@ -1,0 +1,7 @@
+package com.zinoviev.lms_system.exception;
+
+public class StudentNotFoundException extends ResourceNotFoundException {
+    public StudentNotFoundException(String message) {
+        super(message);
+    }
+}

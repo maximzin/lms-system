@@ -1,4 +1,4 @@
-package com.zinoviev.lms_system.service;
+package com.zinoviev.lms_system.service.student;
 
 import com.zinoviev.lms_system.dto.student.StudentCreateDto;
 import com.zinoviev.lms_system.dto.student.StudentUpgradeDto;

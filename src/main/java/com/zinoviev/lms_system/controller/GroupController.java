@@ -1,31 +1,36 @@
 package com.zinoviev.lms_system.controller;
 
 import com.zinoviev.lms_system.dto.group.*;
-import com.zinoviev.lms_system.service.GroupService;
+import com.zinoviev.lms_system.service.group.GroupService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/group")
+@RequiredArgsConstructor
 @Tag(name = "Группы", description = "Управление группами")
 public class GroupController {
     
     private final GroupService groupService;
 
-    public GroupController(GroupService groupService) {
-        this.groupService = groupService;
-    }
-
     @PostMapping
     @Operation(summary = "Создать группу")
     public ResponseEntity<GroupSummaryDto> createGroup(@Valid @RequestBody GroupCreateDto dto) {
         GroupSummaryDto responseDto = groupService.createGroup(dto);
-        return ResponseEntity.ok(responseDto);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(responseDto.id())
+                .toUri();
+        return ResponseEntity.created(location).body(responseDto);
     }
 
     @GetMapping("/{id}")
@@ -46,7 +51,7 @@ public class GroupController {
     @Operation(summary = "Удалить группу по ID")
     public ResponseEntity<String> deleteGroup(@PathVariable UUID id) {
         groupService.deleteGroup(id);
-        return ResponseEntity.ok("Группа была успешно удалена");
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/unite_students_in_group")

@@ -1,31 +1,36 @@
 package com.zinoviev.lms_system.controller;
 
 import com.zinoviev.lms_system.dto.schedule.*;
-import com.zinoviev.lms_system.service.ScheduleService;
+import com.zinoviev.lms_system.service.schedule.ScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/schedule")
+@RequiredArgsConstructor
 @Tag(name = "Расписание", description = "Управление расписанием")
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
-    public ScheduleController(ScheduleService scheduleService) {
-        this.scheduleService = scheduleService;
-    }
-
     @PostMapping
     @Operation(summary = "Создать запись занятия")
     public ResponseEntity<ScheduleSummaryDto> createSchedule(@Valid @RequestBody ScheduleCreateDto dto) {
         ScheduleSummaryDto responseDto = scheduleService.createSchedule(dto);
-        return ResponseEntity.ok(responseDto);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(responseDto.id())
+                .toUri();
+        return ResponseEntity.created(location).body(responseDto);
     }
 
     @PatchMapping("/{id}")
@@ -39,7 +44,7 @@ public class ScheduleController {
     @Operation(summary = "Удалить назначенное занятие")
     public ResponseEntity<String> deleteSchedule(@PathVariable UUID id) {
         scheduleService.deleteSchedule(id);
-        return ResponseEntity.ok("Запись расписания была успешно удалена");
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/for_group/{idGroup}")

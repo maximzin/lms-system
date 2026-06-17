@@ -1,11 +1,13 @@
-package com.zinoviev.lms_system.service;
+package com.zinoviev.lms_system.service.student;
 
 import com.zinoviev.lms_system.dao.GroupRepository;
 import com.zinoviev.lms_system.dao.StudentRepository;
 import com.zinoviev.lms_system.dto.student.StudentCreateDto;
 import com.zinoviev.lms_system.dto.student.StudentUpgradeDto;
 import com.zinoviev.lms_system.dto.student.StudentWithGroupDto;
+import com.zinoviev.lms_system.exception.GroupNotFoundException;
 import com.zinoviev.lms_system.exception.ResourceNotFoundException;
+import com.zinoviev.lms_system.exception.StudentNotFoundException;
 import com.zinoviev.lms_system.mapper.StudentMapper;
 import com.zinoviev.lms_system.model.Group;
 import com.zinoviev.lms_system.model.Student;
@@ -40,7 +42,7 @@ public class StudentServiceImpl implements StudentService {
 
         }
         else {
-            Group group = groupRepository.findById(dto.groupId()).orElseThrow(() -> new ResourceNotFoundException("Группа не найдена"));
+            Group group = groupRepository.findById(dto.groupId()).orElseThrow(() -> new GroupNotFoundException("Группа не найдена"));
             newStudent.setGroup(group);
             studentRepository.save(newStudent);
         }
@@ -53,19 +55,19 @@ public class StudentServiceImpl implements StudentService {
     @Override
     @Transactional(readOnly = true)
     public StudentWithGroupDto getStudent(UUID id) {
-        Student foundStudent = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Студент не найден"));
+        Student foundStudent = studentRepository.findById(id).orElseThrow(() -> new StudentNotFoundException("Студент не найден"));
         return studentMapper.toResponseWithGroup(foundStudent);
     }
 
     @Override
     @Transactional
     public StudentWithGroupDto upgradeStudent(UUID id, StudentUpgradeDto dto) {
-        Student oldStudent = studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Студент не найден"));
+        Student oldStudent = studentRepository.findById(id).orElseThrow(() -> new StudentNotFoundException("Студент не найден"));
         Student newStudent = studentMapper.upgradeEntity(oldStudent, dto);
 
         // Обновляем или оставляем ту же группу, если нам пришло значение в поле groupId
         if (dto.groupId() != null) {
-            newStudent.setGroup(groupRepository.findById(dto.groupId()).orElseThrow(() -> new ResourceNotFoundException("Группа не найдена")));
+            newStudent.setGroup(groupRepository.findById(dto.groupId()).orElseThrow(() -> new GroupNotFoundException("Группа не найдена")));
         }
         // Если приходит null, то убираем группу
         else {

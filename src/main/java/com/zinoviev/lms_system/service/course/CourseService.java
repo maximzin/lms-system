@@ -1,4 +1,4 @@
-package com.zinoviev.lms_system.service;
+package com.zinoviev.lms_system.service.course;
 
 
 import com.zinoviev.lms_system.dto.course.*;
