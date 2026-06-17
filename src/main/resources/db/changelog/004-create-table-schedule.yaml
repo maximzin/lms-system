@@ -12,7 +12,6 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     primaryKeyName: pk_schedule
-                    nullable: false
               - column:
                   name: group_id
                   type: UUID

@@ -1,9 +1,0 @@
-databaseChangeLog:
-  - include:
-      file: db/changelog/001-create-tables-student-and-study-group.yaml
-  - include:
-      file: db/changelog/002-create-tables-teacher-and-course.yaml
-  - include:
-      file: db/changelog/003-create-table-course-group.yaml
-  - include:
-      file: db/changelog/004-create-table-schedule.yaml

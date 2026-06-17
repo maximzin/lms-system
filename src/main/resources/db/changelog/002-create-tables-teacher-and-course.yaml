@@ -12,7 +12,6 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     primaryKeyName: pk_teacher
-                    nullable: false
               - column:
                   name: first_name
                   type: text
@@ -36,7 +35,6 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     primaryKeyName: pk_course
-                    nullable: false
               - column:
                   name: name
                   type: text

@@ -1,0 +1,35 @@
+name: lms_system
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: lms_system
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: 12345
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d lms_system"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  java-spring-app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lms_system
+      SPRING_DATASOURCE_USERNAME: myuser
+      SPRING_DATASOURCE_PASSWORD: 12345
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pg_data:

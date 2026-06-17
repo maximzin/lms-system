@@ -4,14 +4,14 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5433/lms_system
-    username: user
+    username: myuser
     password: 12345
   jpa:
     database: postgresql
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
   liquibase:
-    change-log: classpath:db/changelog/db.changelog-master.yaml
+    change-log: classpath:db/db.changelog-master.yaml
 
 server:
   port: 8080

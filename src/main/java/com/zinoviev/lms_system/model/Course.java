@@ -30,9 +30,9 @@ public class Course {
 
     @ManyToMany
     @JoinTable(
-            name = "course_group",
+            name = "course_study_group",
             joinColumns = @JoinColumn(name = "course_id"),
-            inverseJoinColumns = @JoinColumn(name = "group_id")
+            inverseJoinColumns = @JoinColumn(name = "study_group_id")
     )
     private List<Group> groupList = new ArrayList<>();
 
