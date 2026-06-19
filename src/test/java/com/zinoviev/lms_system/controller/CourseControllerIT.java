@@ -114,8 +114,8 @@ class CourseControllerIT {
     }
 
     @Test
-    @DisplayName("Получить курс по ID")
-    void getCourse_shouldReturnCourse() {
+    @DisplayName("Запросить курс по ID и получить 200 статус")
+    void getCourse_shouldGetCourseAndReturn200() {
         // given
         CourseWithTeacherDto expectedResponseDto = transactionTemplate.execute(status -> {
             Course course = courseRepository.findById(courseId)
@@ -145,8 +145,8 @@ class CourseControllerIT {
     }
 
     @Test
-    @DisplayName("Обновить курс и вернуть обновленное представление")
-    void upgradeCourse_shouldUpgradeCourseAndReturnUpgraded() {
+    @DisplayName("Обновить курс и вернуть 200 статус")
+    void upgradeCourse_shouldUpgradeCourseAndReturn200() {
         // given
         // Ещё один учитель
         Teacher teacher = new Teacher();
@@ -179,7 +179,7 @@ class CourseControllerIT {
     }
 
     @Test
-    @DisplayName("Не обновлять курс с незаполненным полем teacherId и вернуть 400")
+    @DisplayName("Не обновлять курс с незаполненным полем teacherId и вернуть 400 статус")
     void upgradeCourse_shouldNotUpgradeCourseWithInvalidFieldAndReturn400() {
         // given
         CourseUpgradeDto courseUpgradeDto = new CourseUpgradeDto(
@@ -217,8 +217,8 @@ class CourseControllerIT {
     }
 
     @Test
-    @DisplayName("Добавить группу к курсу")
-    void addGroupToCourse_shouldAddGroupToCourse() {
+    @DisplayName("Добавить группу к курсу и вернуть 201 статус")
+    void addGroupToCourse_shouldAddGroupToCourseAndReturn201() {
         // given
         // Создадим группу
         Group group = new Group();
