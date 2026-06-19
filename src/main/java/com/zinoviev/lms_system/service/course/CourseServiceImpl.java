@@ -6,7 +6,6 @@ import com.zinoviev.lms_system.dao.TeacherRepository;
 import com.zinoviev.lms_system.dto.course.*;
 import com.zinoviev.lms_system.exception.CourseNotFoundException;
 import com.zinoviev.lms_system.exception.GroupNotFoundException;
-import com.zinoviev.lms_system.exception.ResourceNotFoundException;
 import com.zinoviev.lms_system.exception.TeacherNotFoundException;
 import com.zinoviev.lms_system.mapper.CourseMapper;
 import com.zinoviev.lms_system.model.Course;
@@ -63,6 +62,9 @@ public class CourseServiceImpl implements CourseService {
     public CourseWithTeacherDto upgradeCourse(UUID id, CourseUpgradeDto dto) {
         Course oldCourse = courseRepository.findById(id).orElseThrow(() -> new CourseNotFoundException("Курс не найден"));
         Course newCourse = courseMapper.upgradeEntity(oldCourse, dto);
+
+        Teacher newTeacher = teacherRepository.findById(dto.teacherId()).orElseThrow(() -> new TeacherNotFoundException("Преподаватель не найден"));
+        newCourse.setTeacher(newTeacher);
 
         courseRepository.save(newCourse);
 
