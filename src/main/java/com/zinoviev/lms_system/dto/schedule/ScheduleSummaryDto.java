@@ -21,7 +21,10 @@ public record ScheduleSummaryDto (
         UUID courseId,
 
         @NotBlank
-        ZonedDateTime startTime
+        ZonedDateTime startTime,
+
+        @NotBlank
+        ZonedDateTime endTime
 
 ) {
 }

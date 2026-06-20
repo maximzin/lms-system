@@ -15,7 +15,7 @@ public interface GroupService {
 
     void deleteGroup(UUID id);
 
-    GroupWithStudentsDto uniteStudentsInGroup(UniteStudentsInGroupDto dto);
+    GroupWithStudentsDto uniteStudentsInGroup(UUID groupId, UniteStudentsInGroupDto dto);
 
 
     

@@ -14,7 +14,7 @@ import java.net.URI;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/group")
+@RequestMapping("/api/v1/group")
 @RequiredArgsConstructor
 @Tag(name = "Группы", description = "Управление группами")
 public class GroupController {
@@ -54,10 +54,10 @@ public class GroupController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/unite_students_in_group")
+    @PatchMapping("/{groupId}/students")
     @Operation(summary = "Объединить список студентов в группу")
-    public ResponseEntity<GroupWithStudentsDto> uniteStudentsInGroup(@Valid @RequestBody UniteStudentsInGroupDto dto) {
-        GroupWithStudentsDto responseDto = groupService.uniteStudentsInGroup(dto);
+    public ResponseEntity<GroupWithStudentsDto> uniteStudentsInGroup(@PathVariable UUID groupId, @Valid @RequestBody UniteStudentsInGroupDto dto) {
+        GroupWithStudentsDto responseDto = groupService.uniteStudentsInGroup(groupId, dto);
         return ResponseEntity.ok(responseDto);
     }
 

@@ -32,6 +32,11 @@ databaseChangeLog:
                   type: timestamp with time zone
                   constraints:
                     nullable: false
+              - column:
+                  name: end_time
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
   - changeSet:
       id: 2-create-fk-schedule-to-study-group
       author: max zinoviev

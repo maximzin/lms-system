@@ -7,10 +7,7 @@ import java.util.UUID;
 public record AddGroupToCourseDto(
 
         @NotNull
-        UUID groupId,
-
-        @NotNull
-        UUID courseId
+        UUID groupId
 
 ) {
 }

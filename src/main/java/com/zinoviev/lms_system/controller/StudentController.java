@@ -16,7 +16,7 @@ import java.net.URI;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/student")
+@RequestMapping("/api/v1/student")
 @RequiredArgsConstructor
 @Tag(name = "Студенты", description = "Управление студентами")
 public class StudentController {

@@ -7,7 +7,10 @@ import java.time.ZonedDateTime;
 public record ScheduleUpdateDto (
 
         @NotNull
-        ZonedDateTime startTime
+        ZonedDateTime startTime,
+
+        @NotNull
+        ZonedDateTime endTime
 
 ) {
 }

@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,15 +40,29 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Transactional
     public ScheduleSummaryDto createSchedule(ScheduleCreateDto dto) {
 
-        if (courseRepository.existsGroupInCourse(dto.courseId(), dto.groupId())) {
+        if (!dto.startTime().isBefore(dto.endTime())) {
+            throw new BusinessException("Время начала занятий не должно быть позже времени окончания");
+        }
+
+        if (!courseRepository.existsGroupInCourse(dto.courseId(), dto.groupId())) {
             log.error("Группа {} не прикреплена к курсу {}", dto.groupId(), dto.courseId());
             throw new BusinessException("Группа не прикреплена к курсу");
+        }
+
+        // Проверка есть ли пересечение у учителя уже имеющихся занятий
+        Course course = courseRepository.findById(dto.courseId()).orElseThrow(() -> new CourseNotFoundException("Курс не найден"));
+        boolean overlaps = scheduleRepository.existsOverlappingForTeacher(
+                course.getTeacher().getId(),
+                dto.startTime(),
+                dto.endTime());
+        if (overlaps) {
+            log.error("Добавление записи Schedule: у преподавателя {} уже есть пересечение с уже имеющимся расписанием", course.getTeacher().getId());
+            throw new BusinessException("У преподавателя уже есть занятие в это время");
         }
 
         Schedule newSchedule = scheduleMapper.toEntity(dto);
 
         Group group = groupRepository.findById(dto.groupId()).orElseThrow(() -> new GroupNotFoundException("Группа не найдена"));
-        Course course = courseRepository.findById(dto.courseId()).orElseThrow(() -> new CourseNotFoundException("Курс не найден"));
 
         newSchedule.setGroup(group);
         newSchedule.setCourse(course);
@@ -65,8 +78,25 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     @Transactional
     public ScheduleSummaryDto updateSchedule(UUID scheduleId, ScheduleUpdateDto dto) {
+        if (!dto.startTime().isBefore(dto.endTime())) {
+            throw new BusinessException("Время начала занятий не должно быть позже времени окончания");
+        }
+
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new ScheduleNotFoundException("Запись расписания не найдена"));
+
+        // Проверяем на пересечение, исключая текущую запись
+        boolean overlapsExcludingCurrent = scheduleRepository.existsOverlappingForTeacherExcludingId(
+                schedule.getCourse().getTeacher().getId(),
+                schedule.getStartTime(),
+                schedule.getEndTime(),
+                scheduleId);
+        if (overlapsExcludingCurrent) {
+            log.error("Обновление записи Schedule: у преподавателя {} есть пересечение с уже имеющимся расписанием", schedule.getCourse().getTeacher().getId());
+            throw new BusinessException("У преподавателя уже есть занятие в это время");
+        }
+
         schedule.setStartTime(dto.startTime());
+        schedule.setEndTime(dto.endTime());
 
         scheduleRepository.save(schedule);
 

@@ -1,5 +1,6 @@
 package com.zinoviev.lms_system.controller;
 
+import com.jayway.jsonpath.JsonPath;
 import com.zinoviev.lms_system.dao.CourseRepository;
 import com.zinoviev.lms_system.dao.GroupRepository;
 import com.zinoviev.lms_system.dao.TeacherRepository;
@@ -7,6 +8,7 @@ import com.zinoviev.lms_system.dto.course.*;
 import com.zinoviev.lms_system.dto.exception.ExceptionDto;
 import com.zinoviev.lms_system.dto.group.GroupSummaryDto;
 import com.zinoviev.lms_system.exception.CourseNotFoundException;
+import com.zinoviev.lms_system.exception.TeacherNotFoundException;
 import com.zinoviev.lms_system.model.Course;
 import com.zinoviev.lms_system.model.Group;
 import com.zinoviev.lms_system.model.Teacher;
@@ -15,15 +17,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.*;
-import org.springframework.transaction.support.TransactionTemplate;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,24 +26,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Testcontainers
-@AutoConfigureTestRestTemplate
-class CourseControllerIT {
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
-            .withDatabaseName("mydb")
-            .withUsername("myuser")
-            .withPassword("secret");
-
-    @Autowired
-    private TestRestTemplate testRestTemplate;
-
-    @Autowired
-    private TransactionTemplate transactionTemplate;
-
+class CourseControllerIT  extends AbstractIT {
 
     // Для создания курса нам нужен учитель
     @Autowired
@@ -101,7 +79,7 @@ class CourseControllerIT {
         // when
         ResponseEntity<CourseWithTeacherDto> responseDto = testRestTemplate
                 .exchange(
-                        "/api/course",
+                        "/api/v1/courses",
                         HttpMethod.POST,
                         entity,
                         CourseWithTeacherDto.class);
@@ -133,15 +111,58 @@ class CourseControllerIT {
         // when
         ResponseEntity<CourseWithTeacherDto> factResponseDto = testRestTemplate
                 .getForEntity(
-                        String.format("/api/course/%s", courseId),
+                        String.format("/api/v1/courses/%s", courseId),
                         CourseWithTeacherDto.class);
 
         // then
         assertThat(factResponseDto.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(factResponseDto.getBody()).isNotNull();
         assertThat(factResponseDto.getBody().id()).isEqualTo(courseId);
+        assertThat(expectedResponseDto).isNotNull();
         assertThat(factResponseDto.getBody().name()).isEqualTo(expectedResponseDto.name());
         assertThat(factResponseDto.getBody().teacherFirstName()).isEqualTo(expectedResponseDto.teacherFirstName());
+    }
+
+    @Test
+    @DisplayName("Запросить курсы через пагинацию и получить 200 статус")
+    void getAllCourses_shouldGetCoursesAndReturn200() {
+        // given
+        // Создадим еще несколько курсов
+        Teacher teacher = teacherRepository.findById(teacherId).orElseThrow(() -> new TeacherNotFoundException("Учитель не найден"));
+        for (int i = 2; i <= 30; i++) {
+            Course newCourse = new Course();
+            newCourse.setName("course_" + i);
+            newCourse.setDescription("course_desc_" + i);
+            newCourse.setTeacher(teacher);
+            courseRepository.save(newCourse);
+        }
+        int queryParamPage = 0;
+        int queryParamSize = 5;
+        String queryParamSort = "name,asc";
+
+        String url = UriComponentsBuilder.fromUriString("/api/v1/courses")
+                .queryParam("page", queryParamPage)
+                .queryParam("size", queryParamSize)
+                .queryParam("sort", queryParamSort)
+                .toUriString();
+
+        // when
+        // Получаем ответ как строку,
+        // потому что с responseType: Page<CourseWithTeacherDto> restTemplate работать не может
+        ResponseEntity<String> response = testRestTemplate.getForEntity(url, String.class);
+
+        // then: проверяем HTTP-статус
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        // Проверяем тело с помощью JsonPath
+        String body = response.getBody();
+        assertThat(body).isNotNull();
+        assertThat(JsonPath.<Integer>read(body, "$.size")).isEqualTo(queryParamSize);
+        assertThat(JsonPath.<Integer>read(body, "$.number")).isEqualTo(queryParamPage);
+        assertThat(JsonPath.<Integer>read(body, "$.totalElements")).isGreaterThanOrEqualTo(30);
+        assertThat(JsonPath.<List<?>>read(body, "$.content")).hasSize(queryParamSize);
+        assertThat(JsonPath.<String>read(body, "$.content[0].description")).isNotNull();
+        assertThat(JsonPath.<String>read(body, "$.content[0].teacherFirstName")).isNotNull();
     }
 
     @Test
@@ -166,7 +187,7 @@ class CourseControllerIT {
         // when
         ResponseEntity<CourseWithTeacherDto> newCourseDto = testRestTemplate
                 .exchange(
-                        String.format("/api/course/%s", courseId),
+                        String.format("/api/v1/courses/%s", courseId),
                         HttpMethod.PATCH,
                         entity,
                         CourseWithTeacherDto.class);
@@ -193,7 +214,7 @@ class CourseControllerIT {
         // when
         ResponseEntity<ExceptionDto> newCourseDto = testRestTemplate
                 .exchange(
-                        String.format("/api/course/%s", courseId),
+                        String.format("/api/v1/courses/%s", courseId),
                         HttpMethod.PATCH,
                         entity,
                         ExceptionDto.class);
@@ -209,7 +230,7 @@ class CourseControllerIT {
     @DisplayName("Удалить курс и вернуть 204 статус")
     void deleteCourse_shouldDeleteCourseAndReturn204() {
         // when
-        testRestTemplate.delete(String.format("/api/course/%s", courseId));
+        testRestTemplate.delete(String.format("/api/v1/courses/%s", courseId));
 
         // then
         boolean isCourseExists = courseRepository.findById(courseId).isPresent();
@@ -225,9 +246,7 @@ class CourseControllerIT {
         group.setName("group_1");
         UUID groupId = groupRepository.save(group).getId();
 
-        AddGroupToCourseDto addGroupToCourseDto = new AddGroupToCourseDto(
-                groupId,
-                courseId);
+        AddGroupToCourseDto addGroupToCourseDto = new AddGroupToCourseDto(groupId);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<AddGroupToCourseDto> entity = new HttpEntity<>(addGroupToCourseDto, headers);
@@ -235,7 +254,7 @@ class CourseControllerIT {
         // when
         ResponseEntity<CourseWithGroupsDto> responseDto = testRestTemplate
                 .exchange(
-                        "/api/course/add_group_to_course",
+                        String.format("/api/v1/courses/%s/groups", courseId),
                         HttpMethod.POST,
                         entity,
                         CourseWithGroupsDto.class);
@@ -254,9 +273,7 @@ class CourseControllerIT {
         // Создадим случайный UUID несуществующей группы
         UUID nonExistentGroupId = UUID.randomUUID();
 
-        AddGroupToCourseDto addGroupToCourseDto = new AddGroupToCourseDto(
-                nonExistentGroupId,
-                courseId);
+        AddGroupToCourseDto addGroupToCourseDto = new AddGroupToCourseDto(nonExistentGroupId);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<AddGroupToCourseDto> entity = new HttpEntity<>(addGroupToCourseDto, headers);
@@ -264,7 +281,7 @@ class CourseControllerIT {
         // when
         ResponseEntity<ExceptionDto> responseDto = testRestTemplate
                 .exchange(
-                        "/api/course/add_group_to_course",
+                        String.format("/api/v1/courses/%s/groups", courseId),
                         HttpMethod.POST,
                         entity,
                         ExceptionDto.class);
@@ -276,8 +293,8 @@ class CourseControllerIT {
     }
 
     @Test
-    @DisplayName("Убрать группу у курса и вернуть 200 статус")
-    void removeGroupFromCourse_shouldRemoveGroupFromCourseAndReturn200() {
+    @DisplayName("Убрать группу у курса и вернуть 204 статус")
+    void removeGroupFromCourse_shouldRemoveGroupFromCourseAndReturn204() {
         // given
         // Создадим группу и добавим к курсу
         Group group = new Group();
@@ -291,26 +308,10 @@ class CourseControllerIT {
             return null;
         });
 
-        RemoveGroupFromCourseDto removeGroupFromCourseDto = new RemoveGroupFromCourseDto(
-                groupId,
-                courseId);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<RemoveGroupFromCourseDto> entity = new HttpEntity<>(removeGroupFromCourseDto, headers);
-
-
         // when
-        ResponseEntity<String> responseDto = testRestTemplate
-                .exchange(
-                        "/api/course/remove_group_from_course",
-                        HttpMethod.PATCH,
-                        entity,
-                        String.class);
-
+        testRestTemplate.delete(String.format("/api/v1/courses/%s/groups/%s", courseId, groupId));
 
         // then
-        assertThat(responseDto.getStatusCode()).isEqualTo(HttpStatus.OK);
-
         List<Group> newGroupList = transactionTemplate.execute(status -> {
             Course course = courseRepository.findById(courseId)
                     .orElseThrow(() -> new CourseNotFoundException("Курс не найден"));

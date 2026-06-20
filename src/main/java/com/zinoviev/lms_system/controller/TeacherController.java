@@ -1,9 +1,9 @@
 package com.zinoviev.lms_system.controller;
 
 import com.zinoviev.lms_system.dto.teacher.TeacherCreateDto;
-import com.zinoviev.lms_system.dto.teacher.TeacherWithCoursesAndStudentsDto;
 import com.zinoviev.lms_system.dto.teacher.TeacherSummaryDto;
 import com.zinoviev.lms_system.dto.teacher.TeacherUpgradeDto;
+import com.zinoviev.lms_system.dto.teacher.TeacherWithCoursesAndStudentsDto;
 import com.zinoviev.lms_system.service.teacher.TeacherService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,7 +17,7 @@ import java.net.URI;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/teacher")
+@RequestMapping("/api/v1/teacher")
 @RequiredArgsConstructor
 @Tag(name = "Преподаватели", description = "Управление преподавателями")
 public class TeacherController {

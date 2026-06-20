@@ -14,7 +14,7 @@ import java.net.URI;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/schedule")
+@RequestMapping("/api/v1/schedule")
 @RequiredArgsConstructor
 @Tag(name = "Расписание", description = "Управление расписанием")
 public class ScheduleController {
@@ -47,14 +47,14 @@ public class ScheduleController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/for_group/{idGroup}")
+    @GetMapping("/{idGroup}")
     @Operation(summary = "Получить расписание занятий для группы по ID")
     public ResponseEntity<ScheduleForGroupDto> getScheduleForGroup(@PathVariable UUID idGroup) {
         ScheduleForGroupDto responseDto = scheduleService.getScheduleForGroup(idGroup);
         return ResponseEntity.ok(responseDto);
     }
 
-    @GetMapping("/for_teacher/{idTeacher}")
+    @GetMapping("/{idTeacher}")
     @Operation(summary = "Получить расписание занятий для преподавателя по ID")
     public ResponseEntity<ScheduleForTeacherDto> getScheduleForTeacher(@PathVariable UUID idTeacher) {
         ScheduleForTeacherDto responseDto = scheduleService.getScheduleForTeacher(idTeacher);

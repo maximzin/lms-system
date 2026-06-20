@@ -8,10 +8,7 @@ import java.util.UUID;
 public record UniteStudentsInGroupDto(
 
         @NotNull
-        List<UUID> studentIdList,
-
-        @NotNull
-        UUID groupId
+        List<UUID> studentIdList
 
 ) {
 }

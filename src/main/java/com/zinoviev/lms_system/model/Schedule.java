@@ -35,4 +35,7 @@ public class Schedule {
     @Column(name = "start_time", nullable = false)
     private ZonedDateTime startTime;
 
+    @Column(name = "end_time", nullable = false)
+    private ZonedDateTime endTime;
+
 }

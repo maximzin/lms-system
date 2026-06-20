@@ -12,6 +12,8 @@ import com.zinoviev.lms_system.model.Course;
 import com.zinoviev.lms_system.model.Group;
 import com.zinoviev.lms_system.model.Teacher;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +60,12 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public Page<CourseWithTeacherDto> getAllCourses(Pageable pageable) {
+        return courseRepository.findAll(pageable)
+                .map(courseMapper::toResponseWithTeacher);
+    }
+
+    @Override
     @Transactional
     public CourseWithTeacherDto upgradeCourse(UUID id, CourseUpgradeDto dto) {
         Course oldCourse = courseRepository.findById(id).orElseThrow(() -> new CourseNotFoundException("Курс не найден"));
@@ -83,8 +91,8 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional
-    public CourseWithGroupsDto addGroupToCourse(AddGroupToCourseDto dto) {
-        Course course = courseRepository.findById(dto.courseId()).orElseThrow(() -> new CourseNotFoundException("Курс не найден"));
+    public CourseWithGroupsDto addGroupToCourse(UUID courseId, AddGroupToCourseDto dto) {
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new CourseNotFoundException("Курс не найден"));
         Group group = groupRepository.findById(dto.groupId()).orElseThrow(() -> new GroupNotFoundException("Группа не найдена"));
 
         course.getGroupList().add(group);
@@ -96,9 +104,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional
-    public void deleteGroupFromCourse(RemoveGroupFromCourseDto dto) {
-        Course course = courseRepository.findById(dto.courseId()).orElseThrow(() -> new CourseNotFoundException("Курс не найден"));
-        Group group = groupRepository.findById(dto.groupId()).orElseThrow(() -> new GroupNotFoundException("Группа не найдена"));
+    public void deleteGroupFromCourse(UUID courseId, UUID groupId) {
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new CourseNotFoundException("Курс не найден"));
+        Group group = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Группа не найдена"));
 
         course.getGroupList().remove(group);
         courseRepository.save(course);

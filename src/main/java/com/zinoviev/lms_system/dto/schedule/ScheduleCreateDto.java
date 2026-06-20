@@ -14,7 +14,10 @@ public record ScheduleCreateDto(
         UUID courseId,
 
         @NotNull
-        ZonedDateTime startTime
+        ZonedDateTime startTime,
+
+        @NotNull
+        ZonedDateTime endTime
 
 ) {
 }

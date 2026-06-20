@@ -4,7 +4,6 @@ import com.zinoviev.lms_system.dao.GroupRepository;
 import com.zinoviev.lms_system.dao.StudentRepository;
 import com.zinoviev.lms_system.dto.group.*;
 import com.zinoviev.lms_system.exception.GroupNotFoundException;
-import com.zinoviev.lms_system.exception.ResourceNotFoundException;
 import com.zinoviev.lms_system.exception.StudentNotFoundException;
 import com.zinoviev.lms_system.mapper.GroupMapper;
 import com.zinoviev.lms_system.model.Group;
@@ -75,9 +74,9 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional
-    public GroupWithStudentsDto uniteStudentsInGroup(UniteStudentsInGroupDto dto) {
+    public GroupWithStudentsDto uniteStudentsInGroup(UUID groupId, UniteStudentsInGroupDto dto) {
 
-        Group group = groupRepository.findById(dto.groupId()).orElseThrow(() -> new GroupNotFoundException("Группа не найдена"));
+        Group group = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException("Группа не найдена"));
 
         dto.studentIdList()
                 .forEach(studentId -> {
@@ -86,7 +85,7 @@ public class GroupServiceImpl implements GroupService {
                     studentRepository.save(student);
                 });
 
-        List<Student> newStudentList = studentRepository.findAllByGroupId(dto.groupId());
+        List<Student> newStudentList = studentRepository.findAllByGroupId(groupId);
 
         return groupMapper.toResponseWithStudents(group, newStudentList);
 
