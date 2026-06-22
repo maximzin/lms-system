@@ -129,7 +129,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleMapper.toScheduleForTeacher(teacher, scheduleList);
     }
 
-    // Удаляет расписание, которому больше года
+    // Удаляет расписание, которому более n дней
     @Override
     @Transactional
     public void deleteOldSchedule(Integer durationDaysToDelete) {
