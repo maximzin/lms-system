@@ -2,10 +2,12 @@ package com.zinoviev.lms_system.dao;
 
 import com.zinoviev.lms_system.model.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -40,5 +42,10 @@ public interface ScheduleRepository extends JpaRepository<Schedule, UUID> {
                                                    @Param("startTime") ZonedDateTime startTime,
                                                    @Param("endTime") ZonedDateTime endTime,
                                                    @Param("excludeId") UUID excludeId);
+
+    // Удаление устаревшего расписания
+    @Modifying
+    @Query("DELETE FROM Schedule s WHERE FUNCTION('DATE', s.startTime) < :oldLimitDate")
+    int deleteOldSchedulesByOldLimitDate(@Param("oldLimitDate") LocalDate oldLimitDate);
 }
 

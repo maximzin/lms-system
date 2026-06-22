@@ -10,9 +10,12 @@ spring:
     database: postgresql
     hibernate:
       ddl-auto: none
-    show-sql: true
   liquibase:
     change-log: classpath:db/db.changelog-master.yaml
 
 server:
   port: 8080
+
+schedule:
+  duration-days-to-delete: 365
+

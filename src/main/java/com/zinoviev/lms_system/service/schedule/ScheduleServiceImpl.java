@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -126,5 +127,14 @@ public class ScheduleServiceImpl implements ScheduleService {
         List<Schedule> scheduleList = scheduleRepository.findAllByTeacherIdOrderByStartTimeAsc(teacherId);
 
         return scheduleMapper.toScheduleForTeacher(teacher, scheduleList);
+    }
+
+    // Удаляет расписание, которому больше года
+    @Override
+    @Transactional
+    public void deleteOldSchedule(Integer durationDaysToDelete) {
+        LocalDate oldLimitDate = LocalDate.now().minusDays(durationDaysToDelete);
+        int deletedCount = scheduleRepository.deleteOldSchedulesByOldLimitDate(oldLimitDate);
+        log.info("Удалено {} записей устаревшего расписания, которому более {} дней", deletedCount, durationDaysToDelete);
     }
 }

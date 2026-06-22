@@ -16,4 +16,6 @@ public interface ScheduleService {
 
     ScheduleForTeacherDto getScheduleForTeacher(UUID teacherId);
 
+    void deleteOldSchedule(Integer durationDaysToDelete);
+
 }
