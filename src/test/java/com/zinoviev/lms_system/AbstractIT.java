@@ -1,4 +1,4 @@
-package com.zinoviev.lms_system.controller;
+package com.zinoviev.lms_system;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.TestRestTemplate;

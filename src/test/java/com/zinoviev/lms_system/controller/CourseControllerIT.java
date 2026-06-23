@@ -1,6 +1,7 @@
 package com.zinoviev.lms_system.controller;
 
 import com.jayway.jsonpath.JsonPath;
+import com.zinoviev.lms_system.AbstractIT;
 import com.zinoviev.lms_system.dao.CourseRepository;
 import com.zinoviev.lms_system.dao.GroupRepository;
 import com.zinoviev.lms_system.dao.TeacherRepository;
