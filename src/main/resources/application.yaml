@@ -1,3 +1,22 @@
 spring:
   application:
     name: lms-system
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5433/lms_system
+    username: myuser
+    password: 12345
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    change-log: classpath:db/db.changelog-master.yaml
+
+server:
+  port: 8080
+
+schedule:
+  duration-days-to-delete: 365
+  deletion-period-cron: '0 0 0 * * *'    #каждый день в 00:00
+

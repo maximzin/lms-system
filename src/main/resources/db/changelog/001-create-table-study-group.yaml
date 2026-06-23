@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-create-study-group
+      author: max zinoviev
+      changes:
+        - createTable:
+            tableName: study_group
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_study_group
+              - column:
+                  name: name
+                  type: text
+                  constraints:
+                    nullable: false

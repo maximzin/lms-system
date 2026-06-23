@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-create-student
+      author: max zinoviev
+      changes:
+        - createTable:
+            tableName: student
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_student
+              - column:
+                  name: first_name
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: group_id
+                  type: UUID
+                  constraints:
+                    nullable: true
+                    foreignKeyName: k_student_study_group
+                    references: study_group(id)

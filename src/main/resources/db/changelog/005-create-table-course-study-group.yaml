@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-create-course-study-group
+      author: max zinoviev
+      changes:
+        - createTable:
+            tableName: course_study_group
+            columns:
+              - column:
+                  name: course_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_course_study_group_course
+                    references: course(id)
+              - column:
+                  name: study_group_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_course_study_group_study_group
+                    references: study_group(id)
+        - addPrimaryKey:
+            tableName: course_study_group
+            columnNames: course_id, study_group_id
+            constraintName: pk_course_study_group

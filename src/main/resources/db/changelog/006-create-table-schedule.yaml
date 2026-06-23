@@ -1,0 +1,69 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-create-schedule
+      author: max zinoviev
+      changes:
+        - createTable:
+            tableName: schedule
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_schedule
+              - column:
+                  name: group_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: teacher_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: course_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_time
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_time
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 2-create-fk-schedule-to-study-group
+      author: max zinoviev
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: schedule
+            baseColumnNames: group_id
+            referencedTableName: study_group
+            referencedColumnNames: id
+            constraintName: fk_schedule_group
+  - changeSet:
+      id: 3-create-fk-schedule-to-teacher
+      author: max zinoviev
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: schedule
+            baseColumnNames: teacher_id
+            referencedTableName: teacher
+            referencedColumnNames: id
+            constraintName: fk_schedule_teacher
+  - changeSet:
+      id: 4-create-fk-schedule-to-course
+      author: max zinoviev
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: schedule
+            baseColumnNames: course_id
+            referencedTableName: course
+            referencedColumnNames: id
+            constraintName: fk_schedule_course
