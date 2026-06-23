@@ -18,4 +18,5 @@ server:
 
 schedule:
   duration-days-to-delete: 365
+  deletion-period-cron: '0 0 0 * * *'    #каждый день в 00:00
 
